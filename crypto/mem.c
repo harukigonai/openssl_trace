@@ -295,17 +295,21 @@ void CRYPTO_free_locked(void *str)
 
 void *CRYPTO_malloc(int num, const char *file, int line)
 	{
+printf("%s: %d\n", __func__, __LINE__);
 	void *ret = NULL;
 
 	if (num <= 0) return NULL;
 
+printf("%s: %d\n", __func__, __LINE__);
 	allow_customize = 0;
 	if (malloc_debug_func != NULL)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		allow_customize_debug = 0;
 		malloc_debug_func(NULL, num, file, line, 0);
 		}
 	ret = malloc_ex_func(num,file,line);
+printf("%s: %d\n", __func__, __LINE__);
 #ifdef LEVITTE_DEBUG_MEM
 	fprintf(stderr, "LEVITTE_DEBUG_MEM:         > 0x%p (%d)\n", ret, num);
 #endif
@@ -316,8 +320,10 @@ void *CRYPTO_malloc(int num, const char *file, int line)
         /* Create a dependency on the value of 'cleanse_ctr' so our memory
          * sanitisation function can't be optimised out. NB: We only do
          * this for >2Kb so the overhead doesn't bother us. */
+printf("%s: %d\n", __func__, __LINE__);
         if(ret && (num > 2048))
 	{	extern unsigned char cleanse_ctr;
+printf("%s: %d\n", __func__, __LINE__);
                 ((unsigned char *)ret)[0] = cleanse_ctr;
 	}
 #endif

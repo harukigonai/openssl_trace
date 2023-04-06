@@ -197,16 +197,21 @@ CERT *ssl_cert_dup(CERT *cert)
 	{
 	CERT *ret;
 	int i;
-
+printf("%s: %d\n", __func__, __LINE__);
 	ret = (CERT *)OPENSSL_malloc(sizeof(CERT));
+printf("%s: %d\n", __func__, __LINE__);
 	if (ret == NULL)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
+printf("%s: %d\n", __func__, __LINE__);
 		return(NULL);
 		}
 
+printf("%s: %d\n", __func__, __LINE__);
 	memset(ret, 0, sizeof(CERT));
 
+printf("%s: %d\n", __func__, __LINE__);
 	ret->key = &ret->pkeys[cert->key - &cert->pkeys[0]];
 	/* or ret->key = ret->pkeys + (cert->key - cert->pkeys),
 	 * if you find that more readable */
@@ -220,37 +225,52 @@ CERT *ssl_cert_dup(CERT *cert)
 #ifndef OPENSSL_NO_RSA
 	if (cert->rsa_tmp != NULL)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		RSA_up_ref(cert->rsa_tmp);
+printf("%s: %d\n", __func__, __LINE__);
 		ret->rsa_tmp = cert->rsa_tmp;
 		}
 	ret->rsa_tmp_cb = cert->rsa_tmp_cb;
 #endif
 
 #ifndef OPENSSL_NO_DH
+printf("%s: %d\n", __func__, __LINE__);
 	if (cert->dh_tmp != NULL)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		ret->dh_tmp = DHparams_dup(cert->dh_tmp);
+printf("%s: %d\n", __func__, __LINE__);
 		if (ret->dh_tmp == NULL)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_DH_LIB);
+printf("%s: %d\n", __func__, __LINE__);
 			goto err;
 			}
 		if (cert->dh_tmp->priv_key)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			BIGNUM *b = BN_dup(cert->dh_tmp->priv_key);
+printf("%s: %d\n", __func__, __LINE__);
 			if (!b)
 				{
+printf("%s: %d\n", __func__, __LINE__);
 				SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_BN_LIB);
+printf("%s: %d\n", __func__, __LINE__);
 				goto err;
 				}
 			ret->dh_tmp->priv_key = b;
 			}
 		if (cert->dh_tmp->pub_key)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			BIGNUM *b = BN_dup(cert->dh_tmp->pub_key);
+printf("%s: %d\n", __func__, __LINE__);
 			if (!b)
 				{
+printf("%s: %d\n", __func__, __LINE__);
 				SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_BN_LIB);
+printf("%s: %d\n", __func__, __LINE__);
 				goto err;
 				}
 			ret->dh_tmp->pub_key = b;
@@ -262,30 +282,42 @@ CERT *ssl_cert_dup(CERT *cert)
 #ifndef OPENSSL_NO_ECDH
 	if (cert->ecdh_tmp)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		ret->ecdh_tmp = EC_KEY_dup(cert->ecdh_tmp);
+printf("%s: %d\n", __func__, __LINE__);
 		if (ret->ecdh_tmp == NULL)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_EC_LIB);
+printf("%s: %d\n", __func__, __LINE__);
 			goto err;
 			}
 		}
 	ret->ecdh_tmp_cb = cert->ecdh_tmp_cb;
 #endif
 
+printf("%s: %d\n", __func__, __LINE__);
 	for (i = 0; i < SSL_PKEY_NUM; i++)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		if (cert->pkeys[i].x509 != NULL)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			ret->pkeys[i].x509 = cert->pkeys[i].x509;
+printf("%s: %d\n", __func__, __LINE__);
 			CRYPTO_add(&ret->pkeys[i].x509->references, 1,
 				CRYPTO_LOCK_X509);
+printf("%s: %d\n", __func__, __LINE__);
 			}
 		
+printf("%s: %d\n", __func__, __LINE__);
 		if (cert->pkeys[i].privatekey != NULL)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			ret->pkeys[i].privatekey = cert->pkeys[i].privatekey;
 			CRYPTO_add(&ret->pkeys[i].privatekey->references, 1,
 				CRYPTO_LOCK_EVP_PKEY);
+printf("%s: %d\n", __func__, __LINE__);
 
 			switch(i) 
 				{
@@ -313,7 +345,9 @@ CERT *ssl_cert_dup(CERT *cert)
 
 			default:
 				/* Can't happen. */
+printf("%s: %d\n", __func__, __LINE__);
 				SSLerr(SSL_F_SSL_CERT_DUP, SSL_R_LIBRARY_BUG);
+printf("%s: %d\n", __func__, __LINE__);
 				}
 			}
 		}
@@ -325,7 +359,9 @@ CERT *ssl_cert_dup(CERT *cert)
 	/* Set digests to defaults. NB: we don't copy existing values as they
 	 * will be set during handshake.
 	 */
+printf("%s: %d\n", __func__, __LINE__);
 	ssl_cert_set_default_md(ret);
+printf("%s: %d\n", __func__, __LINE__);
 
 	return(ret);
 	
@@ -333,22 +369,31 @@ CERT *ssl_cert_dup(CERT *cert)
 err:
 #endif
 #ifndef OPENSSL_NO_RSA
+printf("%s: %d\n", __func__, __LINE__);
 	if (ret->rsa_tmp != NULL)
 		RSA_free(ret->rsa_tmp);
+printf("%s: %d\n", __func__, __LINE__);
 #endif
 #ifndef OPENSSL_NO_DH
+printf("%s: %d\n", __func__, __LINE__);
 	if (ret->dh_tmp != NULL)
 		DH_free(ret->dh_tmp);
+printf("%s: %d\n", __func__, __LINE__);
 #endif
 #ifndef OPENSSL_NO_ECDH
+printf("%s: %d\n", __func__, __LINE__);
 	if (ret->ecdh_tmp != NULL)
 		EC_KEY_free(ret->ecdh_tmp);
+printf("%s: %d\n", __func__, __LINE__);
 #endif
 
+printf("%s: %d\n", __func__, __LINE__);
 	for (i = 0; i < SSL_PKEY_NUM; i++)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		if (ret->pkeys[i].x509 != NULL)
 			X509_free(ret->pkeys[i].x509);
+printf("%s: %d\n", __func__, __LINE__);
 		if (ret->pkeys[i].privatekey != NULL)
 			EVP_PKEY_free(ret->pkeys[i].privatekey);
 		}

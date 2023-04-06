@@ -275,20 +275,26 @@ int SSL_CTX_set_ssl_version(SSL_CTX *ctx,const SSL_METHOD *meth)
 SSL *SSL_new(SSL_CTX *ctx)
 	{
 	SSL *s;
+printf("SSL_new: %d\n", __LINE__);
 
 	if (ctx == NULL)
 		{
+printf("SSL_new: %d\n", __LINE__);
 		SSLerr(SSL_F_SSL_NEW,SSL_R_NULL_SSL_CTX);
 		return(NULL);
 		}
 	if (ctx->method == NULL)
 		{
+printf("SSL_new: %d\n", __LINE__);
 		SSLerr(SSL_F_SSL_NEW,SSL_R_SSL_CTX_HAS_NO_DEFAULT_SSL_VERSION);
 		return(NULL);
 		}
 
+printf("SSL_new: %d\n", __LINE__);
 	s=(SSL *)OPENSSL_malloc(sizeof(SSL));
+printf("SSL_new: %d\n", __LINE__);
 	if (s == NULL) goto err;
+printf("SSL_new: %d\n", __LINE__);
 	memset(s,0,sizeof(SSL));
 
 #ifndef	OPENSSL_NO_KRB5
@@ -301,6 +307,7 @@ SSL *SSL_new(SSL_CTX *ctx)
 
 	if (ctx->cert != NULL)
 		{
+printf("SSL_new: %d\n", __LINE__);
 		/* Earlier library versions used to copy the pointer to
 		 * the CERT, not its contents; only when setting new
 		 * parameters for the per-SSL copy, ssl_cert_new would be
@@ -314,10 +321,12 @@ SSL *SSL_new(SSL_CTX *ctx)
 		s->cert = ssl_cert_dup(ctx->cert);
 		if (s->cert == NULL)
 			goto err;
+printf("SSL_new: %d\n", __LINE__);
 		}
 	else
 		s->cert=NULL; /* Cannot really happen (see SSL_CTX_new) */
 
+printf("SSL_new: %d\n", __LINE__);
 	s->read_ahead=ctx->read_ahead;
 	s->msg_callback=ctx->msg_callback;
 	s->msg_callback_arg=ctx->msg_callback_arg;
@@ -334,6 +343,7 @@ SSL *SSL_new(SSL_CTX *ctx)
 	s->param = X509_VERIFY_PARAM_new();
 	if (!s->param)
 		goto err;
+printf("SSL_new: %d\n", __LINE__);
 	X509_VERIFY_PARAM_inherit(s->param, ctx->param);
 #if 0
 	s->purpose = ctx->purpose;
@@ -342,6 +352,7 @@ SSL *SSL_new(SSL_CTX *ctx)
 	s->quiet_shutdown=ctx->quiet_shutdown;
 	s->max_send_fragment = ctx->max_send_fragment;
 
+printf("SSL_new: %d\n", __LINE__);
 	CRYPTO_add(&ctx->references,1,CRYPTO_LOCK_SSL_CTX);
 	s->ctx=ctx;
 #ifndef OPENSSL_NO_TLSEXT
@@ -365,14 +376,17 @@ SSL *SSL_new(SSL_CTX *ctx)
 
 	s->method=ctx->method;
 
+printf("SSL_new: %d\n", __LINE__);
 	if (!s->method->ssl_new(s))
 		goto err;
 
+printf("SSL_new: %d\n", __LINE__);
 	s->references=1;
 	s->server=(ctx->method->ssl_accept == ssl_undefined_function)?0:1;
 
 	SSL_clear(s);
 
+printf("SSL_new: %d\n", __LINE__);
 	CRYPTO_new_ex_data(CRYPTO_EX_INDEX_SSL, s, &s->ex_data);
 
 #ifndef OPENSSL_NO_PSK
@@ -382,14 +396,17 @@ SSL *SSL_new(SSL_CTX *ctx)
 
 	return(s);
 err:
+printf("SSL_new: %d\n", __LINE__);
 	if (s != NULL)
 		{
+printf("SSL_new: %d\n", __LINE__);
 		if (s->cert != NULL)
 			ssl_cert_free(s->cert);
 		if (s->ctx != NULL)
 			SSL_CTX_free(s->ctx); /* decrement reference count */
 		OPENSSL_free(s);
 		}
+printf("SSL_new: %d\n", __LINE__);
 	SSLerr(SSL_F_SSL_NEW,ERR_R_MALLOC_FAILURE);
 	return(NULL);
 	}

@@ -3757,6 +3757,7 @@ int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
 SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 	     STACK_OF(SSL_CIPHER) *srvr)
 	{
+printf("cipher_func: %d\n", __LINE__);
 	SSL_CIPHER *c,*ret=NULL;
 	STACK_OF(SSL_CIPHER) *prio, *allow;
 	int i,ii,ok;
@@ -3781,6 +3782,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 	sk_SSL_CIPHER_set_cmp_func(clnt, ssl_cipher_ptr_id_cmp);
 #endif
 
+printf("cipher_func: %d\n", __LINE__);
 #ifdef CIPHER_DEBUG
 	printf("Server has %d from %p:\n", sk_SSL_CIPHER_num(srvr), (void *)srvr);
 	for(i=0 ; i < sk_SSL_CIPHER_num(srvr) ; ++i)
@@ -3796,6 +3798,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 	    }
 #endif
 
+printf("cipher_func: %d\n", __LINE__);
 	if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE)
 		{
 		prio = srvr;
@@ -3809,12 +3812,14 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 
 	for (i=0; i<sk_SSL_CIPHER_num(prio); i++)
 		{
+printf("cipher_func: %d\n", __LINE__);
 		c=sk_SSL_CIPHER_value(prio,i);
 
 		/* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
 		if ((c->algorithm_ssl & SSL_TLSV1_2) && 
 			(TLS1_get_version(s) < TLS1_2_VERSION))
 			continue;
+printf("cipher_func: %d\n", __LINE__);
 
 		ssl_set_cert_masks(cert,c);
 		mask_k = cert->mask_k;
@@ -3836,6 +3841,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 #ifndef OPENSSL_NO_KRB5
 		if (alg_k & SSL_kKRB5)
 			{
+printf("cipher_func: %d\n", __LINE__);
 			if ( !kssl_keytab_is_available(s->kssl_ctx) )
 			    continue;
 			}
@@ -3848,6 +3854,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 
 		if (SSL_C_IS_EXPORT(c))
 			{
+printf("cipher_func: %d\n", __LINE__);
 			ok = (alg_k & emask_k) && (alg_a & emask_a);
 #ifdef CIPHER_DEBUG
 			printf("%d:[%08lX:%08lX:%08lX:%08lX]%p:%s (export)\n",ok,alg_k,alg_a,emask_k,emask_a,
@@ -3856,6 +3863,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 			}
 		else
 			{
+printf("cipher_func: %d\n", __LINE__);
 			ok = (alg_k & mask_k) && (alg_a & mask_a);
 #ifdef CIPHER_DEBUG
 			printf("%d:[%08lX:%08lX:%08lX:%08lX]%p:%s\n",ok,alg_k,alg_a,mask_k,mask_a,(void *)c,
@@ -3885,6 +3893,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 				)
 		)
 			{
+printf("cipher_func: %d\n", __LINE__);
 			ec_ok = 0;
 			/* if our certificate's curve is over a field type that the client does not support
 			 * then do not allow this cipher suite to be negotiated */
@@ -3895,10 +3904,13 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 				&& (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field)
 			)
 				{
+printf("cipher_func: %d\n", __LINE__);
 				for (j = 0; j < s->session->tlsext_ecpointformatlist_length; j++)
 					{
+printf("cipher_func: %d\n", __LINE__);
 					if (s->session->tlsext_ecpointformatlist[j] == TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						ec_ok = 1;
 						break;
 						}
@@ -3906,10 +3918,13 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 				}
 			else if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field)
 				{
+printf("cipher_func: %d\n", __LINE__);
 				for (j = 0; j < s->session->tlsext_ecpointformatlist_length; j++)
 					{
+printf("cipher_func: %d\n", __LINE__);
 					if (s->session->tlsext_ecpointformatlist[j] == TLSEXT_ECPOINTFORMAT_ansiX962_compressed_char2)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						ec_ok = 1;
 						break;
 						}
@@ -3926,39 +3941,48 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 			&& ((s->session->tlsext_ellipticcurvelist_length > 0) && (s->session->tlsext_ellipticcurvelist != NULL))
 		)
 			{
+printf("cipher_func: %d\n", __LINE__);
 			ec_ok = 0;
 			if (
 				(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
 				&& (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)
 			)
 				{
+printf("cipher_func: %d\n", __LINE__);
 				ec_nid = EC_GROUP_get_curve_name(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group);
 				if ((ec_nid == 0)
 					&& (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)
 				)
 					{
+printf("cipher_func: %d\n", __LINE__);
 					if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						ec_search1 = 0xFF;
 						ec_search2 = 0x01;
 						}
 					else if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						ec_search1 = 0xFF;
 						ec_search2 = 0x02;
 						}
 					}
 				else
 					{
+printf("cipher_func: %d\n", __LINE__);
 					ec_search1 = 0x00;
 					ec_search2 = tls1_ec_nid2curve_id(ec_nid);
 					}
 				if ((ec_search1 != 0) || (ec_search2 != 0))
 					{
+printf("cipher_func: %d\n", __LINE__);
 					for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2; j++)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						if ((s->session->tlsext_ellipticcurvelist[2*j] == ec_search1) && (s->session->tlsext_ellipticcurvelist[2*j+1] == ec_search2))
 							{
+printf("cipher_func: %d\n", __LINE__);
 							ec_ok = 1;
 							break;
 							}
@@ -3976,36 +4000,45 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 			&& ((s->session->tlsext_ellipticcurvelist_length > 0) && (s->session->tlsext_ellipticcurvelist != NULL))
 		)
 			{
+printf("cipher_func: %d\n", __LINE__);
 			ec_ok = 0;
 			if (s->cert->ecdh_tmp->group != NULL)
 				{
+printf("cipher_func: %d\n", __LINE__);
 				ec_nid = EC_GROUP_get_curve_name(s->cert->ecdh_tmp->group);
 				if ((ec_nid == 0)
 					&& (s->cert->ecdh_tmp->group->meth != NULL)
 				)
 					{
+printf("cipher_func: %d\n", __LINE__);
 					if (EC_METHOD_get_field_type(s->cert->ecdh_tmp->group->meth) == NID_X9_62_prime_field)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						ec_search1 = 0xFF;
 						ec_search2 = 0x01;
 						}
 					else if (EC_METHOD_get_field_type(s->cert->ecdh_tmp->group->meth) == NID_X9_62_characteristic_two_field)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						ec_search1 = 0xFF;
 						ec_search2 = 0x02;
 						}
 					}
 				else
 					{
+printf("cipher_func: %d\n", __LINE__);
 					ec_search1 = 0x00;
 					ec_search2 = tls1_ec_nid2curve_id(ec_nid);
 					}
 				if ((ec_search1 != 0) || (ec_search2 != 0))
 					{
+printf("cipher_func: %d\n", __LINE__);
 					for (j = 0; j < s->session->tlsext_ellipticcurvelist_length / 2; j++)
 						{
+printf("cipher_func: %d\n", __LINE__);
 						if ((s->session->tlsext_ellipticcurvelist[2*j] == ec_search1) && (s->session->tlsext_ellipticcurvelist[2*j+1] == ec_search2))
 							{
+printf("cipher_func: %d\n", __LINE__);
 							ec_ok = 1;
 							break;
 							}
@@ -4021,17 +4054,22 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
 		ii=sk_SSL_CIPHER_find(allow,c);
 		if (ii >= 0)
 			{
+printf("cipher_func: %d\n", __LINE__);
 #if !defined(OPENSSL_NO_EC) && !defined(OPENSSL_NO_TLSEXT)
 			if ((alg_k & SSL_kEECDH) && (alg_a & SSL_aECDSA) && s->s3->is_probably_safari)
 				{
+printf("cipher_func: %d\n", __LINE__);
 				if (!ret) ret=sk_SSL_CIPHER_value(allow,ii);
+printf("cipher_func: %d\n", __LINE__);
 				continue;
 				}
 #endif
 			ret=sk_SSL_CIPHER_value(allow,ii);
+printf("cipher_func: %d\n", __LINE__);
 			break;
 			}
 		}
+printf("cipher_func: %d\n", __LINE__);
 	return(ret);
 	}
 
