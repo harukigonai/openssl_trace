@@ -332,6 +332,7 @@ void ec_GF2m_simple_point_clear_finish(EC_POINT *point)
 /* Copy the contents of one EC_POINT into another.  Assumes dest is initialized. */
 int ec_GF2m_simple_point_copy(EC_POINT *dest, const EC_POINT *src)
 	{
+printf("%s: %d\n", __func__, __LINE__);
 	if (!BN_copy(&dest->X, &src->X)) return 0;
 	if (!BN_copy(&dest->Y, &src->Y)) return 0;
 	if (!BN_copy(&dest->Z, &src->Z)) return 0;

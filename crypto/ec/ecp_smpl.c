@@ -381,6 +381,7 @@ void ec_GFp_simple_point_clear_finish(EC_POINT *point)
 
 int ec_GFp_simple_point_copy(EC_POINT *dest, const EC_POINT *src)
 	{
+printf("%s: %d\n", __func__, __LINE__);
 	if (!BN_copy(&dest->X, &src->X)) return 0;
 	if (!BN_copy(&dest->Y, &src->Y)) return 0;
 	if (!BN_copy(&dest->Z, &src->Z)) return 0;
