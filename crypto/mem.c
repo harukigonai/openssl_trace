@@ -327,7 +327,7 @@ printf("%s: %d\n", __func__, __LINE__);
                 ((unsigned char *)ret)[0] = cleanse_ctr;
 	}
 #endif
-
+printf("%s: %d\n", __func__, __LINE__);
 	return ret;
 	}
 char *CRYPTO_strdup(const char *str, const char *file, int line)

@@ -108,10 +108,11 @@ EC_KEY *EC_KEY_new_by_curve_name(int nid)
 void EC_KEY_free(EC_KEY *r)
 	{
 	int i;
-
+printf("%s: %d\n", __func__, __LINE__);
 	if (r == NULL) return;
-
+printf("%s: %d\n", __func__, __LINE__);
 	i=CRYPTO_add(&r->references,-1,CRYPTO_LOCK_EC);
+printf("%s: %d\n", __func__, __LINE__);
 #ifdef REF_PRINT
 	REF_PRINT("EC_KEY",r);
 #endif
@@ -123,75 +124,95 @@ void EC_KEY_free(EC_KEY *r)
 		abort();
 		}
 #endif
-
+printf("%s: %d\n", __func__, __LINE__);
 	if (r->group    != NULL) 
 		EC_GROUP_free(r->group);
 	if (r->pub_key  != NULL)
 		EC_POINT_free(r->pub_key);
 	if (r->priv_key != NULL)
 		BN_clear_free(r->priv_key);
-
+printf("%s: %d\n", __func__, __LINE__);
 	EC_EX_DATA_free_all_data(&r->method_data);
-
+printf("%s: %d\n", __func__, __LINE__);
 	OPENSSL_cleanse((void *)r, sizeof(EC_KEY));
-
+printf("%s: %d\n", __func__, __LINE__);
 	OPENSSL_free(r);
+printf("%s: %d\n", __func__, __LINE__);
 	}
 
 EC_KEY *EC_KEY_copy(EC_KEY *dest, const EC_KEY *src)
 	{
 	EC_EXTRA_DATA *d;
-
+printf("%s: %d\n", __func__, __LINE__);
 	if (dest == NULL || src == NULL)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		ECerr(EC_F_EC_KEY_COPY, ERR_R_PASSED_NULL_PARAMETER);
+printf("%s: %d\n", __func__, __LINE__);
 		return NULL;
 		}
 	/* copy the parameters */
 	if (src->group)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		const EC_METHOD *meth = EC_GROUP_method_of(src->group);
+printf("%s: %d\n", __func__, __LINE__);
 		/* clear the old group */
 		if (dest->group)
 			EC_GROUP_free(dest->group);
+printf("%s: %d\n", __func__, __LINE__);
 		dest->group = EC_GROUP_new(meth);
+printf("%s: %d\n", __func__, __LINE__);
 		if (dest->group == NULL)
 			return NULL;
+printf("%s: %d\n", __func__, __LINE__);
 		if (!EC_GROUP_copy(dest->group, src->group))
 			return NULL;
 		}
+printf("%s: %d\n", __func__, __LINE__);
 	/*  copy the public key */
 	if (src->pub_key && src->group)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		if (dest->pub_key)
 			EC_POINT_free(dest->pub_key);
+printf("%s: %d\n", __func__, __LINE__);
 		dest->pub_key = EC_POINT_new(src->group);
 		if (dest->pub_key == NULL)
 			return NULL;
+printf("%s: %d\n", __func__, __LINE__);
 		if (!EC_POINT_copy(dest->pub_key, src->pub_key))
 			return NULL;
 		}
+printf("%s: %d\n", __func__, __LINE__);
 	/* copy the private key */
 	if (src->priv_key)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		if (dest->priv_key == NULL)
 			{
+printf("%s: %d\n", __func__, __LINE__);
 			dest->priv_key = BN_new();
+printf("%s: %d\n", __func__, __LINE__);
 			if (dest->priv_key == NULL)
 				return NULL;
 			}
+printf("%s: %d\n", __func__, __LINE__);
 		if (!BN_copy(dest->priv_key, src->priv_key))
 			return NULL;
 		}
+printf("%s: %d\n", __func__, __LINE__);
 	/* copy method/extra data */
 	EC_EX_DATA_free_all_data(&dest->method_data);
-
+printf("%s: %d\n", __func__, __LINE__);
 	for (d = src->method_data; d != NULL; d = d->next)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		void *t = d->dup_func(d->data);
-		
+printf("%s: %d\n", __func__, __LINE__);
 		if (t == NULL)
 			return 0;
+printf("%s: %d\n", __func__, __LINE__);
 		if (!EC_EX_DATA_set_data(&dest->method_data, t, d->dup_func, d->free_func, d->clear_free_func))
 			return 0;
 		}
@@ -201,18 +222,23 @@ EC_KEY *EC_KEY_copy(EC_KEY *dest, const EC_KEY *src)
 	dest->conv_form = src->conv_form;
 	dest->version   = src->version;
 	dest->flags = src->flags;
-
+printf("%s: %d\n", __func__, __LINE__);
 	return dest;
 	}
 
 EC_KEY *EC_KEY_dup(const EC_KEY *ec_key)
 	{
+printf("%s: %d\n", __func__, __LINE__);
 	EC_KEY *ret = EC_KEY_new();
+printf("%s: %d\n", __func__, __LINE__);
 	if (ret == NULL)
 		return NULL;
+printf("%s: %d\n", __func__, __LINE__);
 	if (EC_KEY_copy(ret, ec_key) == NULL)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		EC_KEY_free(ret);
+printf("%s: %d\n", __func__, __LINE__);
 		return NULL;
 		}
 	return ret;
