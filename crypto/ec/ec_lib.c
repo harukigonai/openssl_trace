@@ -783,18 +783,26 @@ void EC_POINT_clear_free(EC_POINT *point)
 
 int EC_POINT_copy(EC_POINT *dest, const EC_POINT *src)
 	{
+printf("%s: %d\n", __func__, __LINE__);
 	if (dest->meth->point_copy == 0)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		ECerr(EC_F_EC_POINT_COPY, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+printf("%s: %d\n", __func__, __LINE__);
 		return 0;
 		}
+printf("%s: %d\n", __func__, __LINE__);
 	if (dest->meth != src->meth)
 		{
+printf("%s: %d\n", __func__, __LINE__);
 		ECerr(EC_F_EC_POINT_COPY, EC_R_INCOMPATIBLE_OBJECTS);
+printf("%s: %d\n", __func__, __LINE__);
 		return 0;
 		}
+printf("%s: %d\n", __func__, __LINE__);
 	if (dest == src)
 		return 1;
+printf("%s: %d\n", __func__, __LINE__);
 	return dest->meth->point_copy(dest, src);
 	}
 
